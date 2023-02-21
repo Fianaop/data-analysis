@@ -1,17 +1,18 @@
 1.1. Organizing Tabular Data in Python
-NO.1 When working with this sort of tabular data, it's important to organize row and columns following the principles of "tidy data." What does that mean in the case of our dataset?
+1.1.1 When working with this sort of tabular data, it's important to organize row and columns following the principles of "tidy data."
+What does that mean in the case of our dataset?
 
 Each row corresponds to a single house in our dataset. We'll call each of these houses an observation.
 Each column corresponds to a characteristic of each house. We'll call these features.
 Each cell contains only one value.
 
-NO.2 list:
+1.1.2 list:
 eg:house_0_list = [115910.26, 128, 4];house_0_list[0]=115910.26
 #the first item in a list is always 0.
 
 house_0_price_m2 = house_0_list[0]/ house_0_list[1]
 
-append:
+1.1.3 append:
 to add a new item at the end.
 eg:house_0_list.append(house_0_price_m2)
 then,house_0_list=[115910.26, 128, 4, 905.54890625]
@@ -26,7 +27,7 @@ houses_nested_list = [
 ]
 list为list中的元素
 
-用for循环计算list元素构成的函数
+1.1.4 用for循环计算list元素构成的函数
 eg:for house in houses_nested_list:
     price_m2 = house[0]/house[1]
     house.append(price_m2)
@@ -34,7 +35,7 @@ eg:for house in houses_nested_list:
 houses_nested_list
 then,每个list的最后都会增加一个元素
 
-NO.3 dictionary：
+1.1.5 dictionary：
 比起list有key可以知道values代表什么
 eg:
 house_0_dict = {
@@ -45,6 +46,7 @@ house_0_dict = {
 output:
 house_0_dict={'price_aprox_usd': 115910.26, 'surface_covered_in_m2': 128, 'rooms': 4}
 
+1.1.7
 Calculate:
 eg:
 house_0_dict["price_per_m2"] = house_0_dict["price_aprox_usd"]/house_0_dict["surface_covered_in_m2"]
@@ -54,7 +56,7 @@ house_0_dict={'price_aprox_usd': 115910.26,
  'rooms': 4,
  'price_per_m2': 905.54890625}
  
- JSON:
+1.1.8 JSON:
 JSON stands for Java Script Object Notation, and it's a text format for storing and transporting data.
 JSON works by creating key-value pairs, where the key is data that can be represented by letters (called a string). 
 JSON values can be strings, numbers, objects, arrays, boolean data, or null. 
@@ -66,6 +68,7 @@ for house in houses_rowwise:
 houses_rowwise
 the step add "price_per_m2" and its value in the end of the dictionary.
 
+1.1.9
 calculate:利用for循环
 #建空列表
 house_prices = []
@@ -75,6 +78,7 @@ for house in houses_rowwise:
 #计算平均数，sum求和列表元素，len计算个数   
 mean_house_price = sum(house_prices) / len(house_prices)
 
+1.1.10
 #计算dictionary中的list
 eg:
 houses_columnwise = {
@@ -82,6 +86,8 @@ houses_columnwise = {
     "surface_covered_in_m2": [128.0, 210.0, 58.0, 79.0, 111.0],
     "rooms": [4.0, 3.0, 2.0, 3.0, 3.0],
 }
+
+1.1.11
 #求平均数
 mean_house_price = sum(houses_columnwise["price_aprox_usd"])/len(houses_columnwise["price_aprox_usd"])
 
@@ -95,7 +101,7 @@ for p,a in zip(price,area):
 #添加新column
 houses_columnwise["price_per_m2"] = price_per_m2
 
-NO.4 DataFrames
+1.1.12 DataFrames
 a table tool in the data science libraries--pandas
 eg:
 #first,need to import
