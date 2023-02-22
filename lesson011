@@ -253,7 +253,8 @@ print(p_correlation)
 1.4.6 Create a new DataFrame
 df_morelos = df[df["state"]=="Morelos"]
 
-
-
+1.4.7 根据指标筛选得到新的列表
+df_south=df.loc[df["region"]=="South"]
+选出"region"列中值为"South"的所有数据
 
 
