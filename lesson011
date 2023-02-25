@@ -257,4 +257,24 @@ df_morelos = df[df["state"]=="Morelos"]
 df_south=df.loc[df["region"]=="South"]
 选出"region"列中值为"South"的所有数据
 
+1.4.8 选出房产最多的州并根据该州的数据画图
+# Subset data
+df_south_rgs = df_south[df_south["state"]==(df_south["state"].value_counts().idxmax())]
+
+# Build scatter plot
+plt.scatter(x=df_south_rgs["area_m2"],y=df_south_rgs["price_usd"])
+
+
+# Label axes
+plt.xlabel("Area [sq meters]")
+plt.ylabel("Price [USD]")
+
+# Add title
+plt.title("<name of state>: Price vs. Area")
+
+# Don't change the code below 👇
+plt.savefig("images/1-5-18.png", dpi=150)
+
+
+
 
