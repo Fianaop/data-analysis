@@ -176,4 +176,20 @@ plt.xlabel("surface covered [sq meters]")
 plt.ylabel("price [usd]")
 plt.legend();
 
+2.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
