@@ -180,8 +180,59 @@ plt.legend();
 
 
 
+2.3
+
+2.3.1
+# glob
+glob.glob(pathname, *, root_dir=None, dir_fd=None, recursive=False, include_hidden=False)
+
+# Use glob to create a list that contains the filenames for all the Buenos Aires real estate CSV files
+files = glob("data/buenos-aires-real-estate-*.csv")
+files
+
+2.3.2 Use your wrangle function in a for loop to create a list named frames. 
+frames = []
+for file in files:
+    df = wrangle(file)
+    frames.append(df)
+
+2.3.3 Use pd.concat to concatenate the items in frames into a single DataFrame df.
+df = pd.concat(frames, ignore_index=True)
+df.shape
+
+2.2.4 Modify your wrangle function to create a new feature "neighborhood".
+
+# extract neighborhood
+    df["neighborhood"] = df["place_with_parent_names"].str.split("|",expand=True)[3].head()
+    df.drop(columns="place_with_parent_names", inplace=True)
 
 
+2.2.5 Create your feature matrix X_train and target vector y_train. 
+
+target = "price_aprox_usd"
+features = ["neighborhood"]
+y_train = df[target]
+X_train = df[features]
+
+2.2.6 Calculate the baseline mean absolute error for your model.
+y_mean = y_train.mean()
+y_pred_baseline = [y_mean] * len(y_train)
+print("Mean apt price:", y_mean)
+print("Baseline MAE:", mean_absolute_error(y_train ,y_pred_baseline))
+
+2.2.7 OneHotEncoder
+
+
+#First, instantiate a OneHotEncoder named ohe. Make sure to set the use_cat_names argument to True.
+ohe = OneHotEncoder(use_cat_names = True)
+
+# Next, fit your transformer to the feature matrix X_train.
+ohe.fit(X_train)
+
+# Finally, use your encoder to transform the feature matrix X_train, and assign the transformed data to the variable XT_train.
+XT_train = ohe.transform(X_train)
+print(XT_train.shape)
+XT_train.head()
 
 
 
