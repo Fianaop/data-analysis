@@ -530,10 +530,170 @@ interact(
 
 
 
+2.3 assignment
+## Prepare Data
 
+1 # Import 
 
+# Build your `wrangle` function
+def wrangle(filepath):
+    
+    df = pd.read_csv(filepath)
+    
+    # Subset data 条件筛选
+    make_am = df["place_with_parent_names"].str.contains("Distrito Federal")
+    mask_apt = df["property_type"] == "apartment"
+    mask_price = df["price_aprox_usd"] < 100_000
+    df = df[make_am & mask_apt & mask_price]
+    
+    # Remove outliers by trimming the bottom and top 10% of properties 去头去尾
+    low, high = df["surface_covered_in_m2"].quantile([0.1, 0.9])
+    mask_area = df["surface_covered_in_m2"].between(low, high)
+    df = df[mask_area]
+    
+    # Create separate "lat" and "lon" columns.  处理数据，分成两列
+    df[["lat", "lon"]] = df["lat-lon"].str.split(",", expand=True).astype(float)
+    df.drop(columns="lat-lon", inplace=True)
+    
+    # Create a "borough" feature from the "place_with_parent_names" column. 提取杂糅的一列中需要的内容
+    df["borough"] = df["place_with_parent_names"].str.split("|", expand=True)[1]
+    df.drop(columns="place_with_parent_names", inplace=True)
+    
+    # Drop columns that are more than 50% null values. 删除空值多的列
+    df.drop(columns = ["floor","expenses","surface_total_in_m2","price_usd_per_m2","rooms"],inplace=True)
+    
+    #检索每列空值多少个    df.isnull().sum()
+    
+    # Drop columns containing low- or high-cardinality categorical values. 删除低基数或高基数的列，指一列中只有1钟值或者每列都必然不同无数据跟踪意义
+    df.drop(columns =["operation","properati_url","currency","property_type"], inplace=True)
+    
+    
+    # Drop any columns that would constitute leakage for the target "price_aprox_usd".
+    df.drop(columns=[
+        'price',
+        'price_aprox_local_currency',
+        
+        'price_per_m2'],
+        inplace=True
+    )
+    
+    # Drop any columns that would create issues of multicollinearity. 删除具有多重共线性的列
+   
+    return df
 
+# 批量打开csv文件，处理为dataframe数据
 
+files = glob("data/mexico-city-real-estate-*.csv")
+
+frames = [wrangle(file) for file in files] #用wrangle函数处理数据
+frames[0].head()
+
+df = pd.concat(frames, ignore_index=True) #将几个dataframe连接成一个
+
+print(df.info())
+df.head()
+
+2、
+# Explore
+
+创建直方图
+# Build histogram
+plt.hist(df["price_aprox_usd"])
+
+# Label axes
+plt.xlabel("Price [$]")
+plt.ylabel("Count")
+# Add title
+plt.title("Distribution of Apartment Prices");
+
+创建散点图
+# Build scatter plot
+features = ["surface_covered_in_m2"]
+X_train = df[features]
+target = "price_aprox_usd"
+y_train = df[target]
+
+plt.scatter(X_train,y_train)
+
+# Label axes
+plt.xlabel("Area [sq meters]")
+plt.ylabel("Price [USD]")
+
+# Add title
+plt.title("Mexico City: Price vs. Area");
+
+创建地图价格指数
+# Plot Mapbox location and price
+fig = px.scatter_mapbox(
+    df,
+    lat="lat",
+    lon="lon",
+    width=600,  # Width of map
+    height=600,  # Height of map
+    color="price_aprox_usd",
+    hover_data=["price_aprox_usd"],  # Display price when hovering mouse over house
+)
+
+fig.update_layout(mapbox_style="open-street-map")
+
+fig.show()
+
+3、Split
+
+创建特征矩阵和目标向量
+# Split data into feature matrix `X_train` and target vector `y_train`.
+target = "price_aprox_usd" #一个序列
+features = ["surface_covered_in_m2", "lat", "lon", "borough"] #一个矩阵列表
+
+X_train = df[features]
+y_train = df[target]
+
+## Build Model
+
+4、Baseline
+计算模型的基线平均绝对误差。
+y_mean = y_train.mean()
+y_pred_baseline = [y_mean]*len(y_train)
+baseline_mae = mean_absolute_error(y_train, y_pred_baseline)
+print("Mean apt price:", y_mean)
+print("Baseline MAE:", baseline_mae)
+
+5、Iterate
+建立一个包含转换数据、预测数据的传递途径的模型
+# Build Model
+model = make_pipeline(
+    OneHotEncoder(use_cat_names = True),  # use_cat_names=True 使用该列的值作为新的features
+    SimpleImputer(),
+    Ridge()   
+)
+# Fit model
+model.fit(X_train, y_train)
+
+6、Evaluate 估计  # 确保用于训练模型的 X_train 与 X_test 具有相同的列顺序。否则，它可能会损害模型的性能。
+X_test = pd.read_csv("data/mexico-city-test-features.csv")
+print(X_test.info())
+X_test.head()
+
+y_test_pred = pd.Series(model.predict(X_test))
+y_test_pred.head()
+
+## Communicate Results
+
+建立回归模型
+intercept = model.named_steps["ridge"].intercept_    #截距
+coefficients = model.named_steps["ridge"].coef_     #系数
+features = model.named_steps["onehotencoder"].get_feature_names()
+feat_imp = pd.Series(coefficients, index=features)
+feat_imp
+
+画图
+# Build bar chart
+feat_imp.sort_values(key=abs).tail(10).plot(kind="barh")
+# Label axes
+plt.xlabel("Importance [USD]")
+plt.ylabel("Feature")
+# Add title
+plt.title("Feature Importances for Apartment Price")
 
 
 
