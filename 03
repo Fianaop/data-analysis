@@ -43,6 +43,53 @@ print("Documents from site 6:",nairobi.count_documents({"metadata.site":6}))
 print("Documents from site 29:",nairobi.count_documents({"metadata.site":29}))
 
 3.1.11: Use the aggregate method to determine how many readings there are for each site in the nairobi collection.
+result = nairobi.aggregate(
+    [
+        {"$group":{"_id": "$metadata.site","count":{"$count":{}}}}
+    ] 
+)
+pp.pprint(list(result))
+
+3.1.12: Use the distinct method to determine how many types of measurements have been taken in the nairobi collection.
+nairobi.distinct("metadata.measurement")
+
+3.1.13: Use the find method to retrieve the PM 2.5 readings from all sites. Be sure to limit your results to 3 records only.
+result = nairobi.find({"metadata.measurement":"P2"}).limit(3)
+pp.pprint(list(result))
+
+3.1.14: Use the aggregate method to calculate how many readings there are for each type ("humidity", "temperature", "P2", and "P1") in site 6.
+result = nairobi.aggregate(
+    [
+        {"$match":{"metadata.site":6}},
+        {"$group":{"_id":"$metadata.measurement","count":{"$count":{}}}}
+    ]
+)
+pp.pprint(list(result))
+
+3.1.15: Use the aggregate method to calculate how many readings there are for each type ("humidity", "temperature", "P2", and "P1") in site 29.
+result = nairobi.aggregate(
+    [
+        {"$match":{"metadata.site":29}},
+        {"$group":{"_id":"$metadata.measurement","count":{"$count":{}}}}
+    ]
+)
+pp.pprint(list(result))
+
+3.1.16: Use the find method to retrieve the PM 2.5 readings from site 29. 
+Be sure to limit your results to 3 records only. 
+Since we won't need the metadata for our model, 
+use the projection argument to limit the results to the "P2" and "timestamp" keys only.
+
+result = nairobi.find(
+    {"metadata.site":29,"metadata.measurement":"P2"},
+    projection={"P2":1,"timestamp":1,"_id":0}
+)
+pp.pprint(result.next())
+
+3.1.17: Read records from your result into the DataFrame df. Be sure to set the index to "timestamp".
+df = pd.DataFrame(result).set_index("timestamp")  #需先再次运行3.1.16
+df.head()
+
 
 
 
