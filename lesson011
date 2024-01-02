@@ -6,16 +6,19 @@ Each row corresponds to a single house in our dataset. We'll call each of these 
 Each column corresponds to a characteristic of each house. We'll call these features.
 Each cell contains only one value.
 
+#列表
 1.1.2 list:
 eg:house_0_list = [115910.26, 128, 4];house_0_list[0]=115910.26
 #the first item in a list is always 0.
 
 house_0_price_m2 = house_0_list[0]/ house_0_list[1]
 
+#列表值增加
 1.1.3 append:
 to add a new item at the end.
 eg:house_0_list.append(house_0_price_m2)
 then,house_0_list=[115910.26, 128, 4, 905.54890625]
+
 
 list嵌套list:
 houses_nested_list = [
@@ -95,6 +98,25 @@ mean_house_price = sum(houses_columnwise["price_aprox_usd"])/len(houses_columnwi
 price = houses_columnwise["price_aprox_usd"]
 area = houses_columnwise["surface_covered_in_m2"]
 price_per_m2 = []
+
+#zip() 函数用于将可迭代的对象作为参数，将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的列表。
+a = [1,2,3]
+>>> b = [4,5,6]
+>>> c = [4,5,6,7,8]
+>>> zipped = zip(a,b)     # 返回一个对象
+>>> zipped
+<zip object at 0x103abc288>
+>>> list(zipped)  # list() 转换为列表
+[(1, 4), (2, 5), (3, 6)]
+>>> list(zip(a,c))              # 元素个数与最短的列表一致
+[(1, 4), (2, 5), (3, 6)]
+
+>>> a1, a2 = zip(*zip(a,b))          # 与 zip 相反，zip(*) 可理解为解压，返回二维矩阵式
+>>> list(a1)
+[1, 2, 3]
+>>> list(a2)
+[4, 5, 6]
+
 for p,a in zip(price,area):
     price_m2 = p/a
     price_per_m2.append(price_m2)
@@ -274,6 +296,9 @@ plt.title("<name of state>: Price vs. Area")
 
 # Don't change the code below 👇
 plt.savefig("images/1-5-18.png", dpi=150)
+
+
+
 
 
 
