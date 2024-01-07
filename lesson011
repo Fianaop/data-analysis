@@ -152,7 +152,7 @@ df1.info() #显示数据详细信息，包括每列数据个数、类型、非�
 1.2.3
 dropna #删除空值
 df1.dropna(inplace=True)
-str.replace #删除字符串中的字符
+str.replace #删除字符串中的字符,替换
 astype #改变数据类型
 df1["price_usd"] = (df1["price_usd"].str.replace("$","",regex=False).str.replace(",","").astype(float))
 
